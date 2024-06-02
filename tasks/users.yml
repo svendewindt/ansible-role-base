@@ -1,0 +1,33 @@
+---
+- name: Users | Process groups
+  set_fact:
+    add_groups: "{{ add_groups + item.groups|default([]) }}"
+  with_items: "{{ add_users }}"
+  become: true
+
+- name: Users | Add groups
+  group:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ add_groups | unique }}"
+  become: true
+
+- name: Users | Add users
+  user:
+    name: "{{ item.name }}"
+    state: present
+    comment: "{{ item.comment|default('') }}"
+    shell: "{{ item.shell|default('/bin/bash') }}"
+    groups: "{{ ','.join(item.groups) if item.groups is defined else [] }}"
+    # uid: "{{ item.uid if item.uid is defined }}"
+    password: "{{ item.password|default('!!') }}"
+  with_items: "{{ add_users }}"
+  become: true
+
+- name: "Users | Set up SSH keys"
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+  with_items: "{{ add_users }}"
+  when: item.ssh_key is defined
+  become: true

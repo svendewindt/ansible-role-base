@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  remote_user: root
+
+  vars:
+    # Install
+    install_packages: ["mlocate", "cockpit", "tar", "tmux", "bash-completion"]
+    
+    # Users
+    add_users: 
+      - name: sven
+        comment: 'Sven de Windt'
+        groups:
+          - wheel
+        # To create a password hash: mkpasswd -m sha-512  
+        password: $6$Wpu1.R85...
+        ssh_key: ssh-ed25519 AAAAC3Nz..
+
+    # Config
+    time_zone: "Europe/Brussels"
+    selinux_state: enforcing
+    selinux_booleans: []
+    firewall_allow_services: [dhcpv6-client, ssh]
+    firewall_allow_ports: []
+    firewall_disallow_services: [cockpit] # use ssh portforwarding to access cockpit
+    ssh_PasswordAuthentication: "no"
+    ssh_PermitRootLogin: "no"
+    ssh_PermitEmptyPasswords: "no"
+
+    # Git
+    git_user_name: "Github username"
+    git_user_email: "Github email address"
+    git_push_default: "simple"
+    git_pull_rebase: "true"
+    git_core_autocrlf: "input"
+
+  roles:
+    - ansible_role_base

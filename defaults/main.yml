@@ -1,0 +1,34 @@
+---
+# defaults file for base_role
+# Users
+add_groups: []
+add_users:
+#  - name: ''
+#    comment: ''
+#    groups:
+#      - wheel
+#    # To create a password hash: mkpasswd -m sha-512  
+#    password: 
+#    ssh_key: 
+
+# Install
+install_corepackages: ["firewalld", "git", "vim"]
+install_packages: []
+
+# Config
+time_zone: "Europe/Brussels" # to view all timezones run sudo timedatectl list-timezones
+selinux_state: enforcing
+selinux_booleans: []
+firewall_allow_services: [dhcpv6-client, ssh]
+firewall_allow_ports: []
+firewall_disallow_services: [cockpit] # use ssh portforwarding to access cockpit
+ssh_PasswordAuthentication: "no"
+ssh_PermitRootLogin: "no"
+ssh_PermitEmptyPasswords: "no"
+
+# Git
+git_user_name: ""
+git_user_email: ""
+git_push_default: "simple"
+git_pull_rebase: "true"
+git_core_autocrlf: "input"

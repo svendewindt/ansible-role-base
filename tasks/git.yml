@@ -1,0 +1,5 @@
+---
+- name: Git | Set .gitignore file
+  ansible.builtin.template:
+    src: templates/gitconfig.j2
+    dest: ~/.gitconfig

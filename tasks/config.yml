@@ -1,0 +1,96 @@
+---
+- name: Configuration | Set time zone to {{ time_zone }}
+  file:
+    src: /usr/share/zoneinfo/{{ time_zone }}
+    dest: /etc/localtime
+    state: link
+    force: true
+  become: true
+
+- name: "Security | Make sure SELinux has the desired state {{ selinux_state }}"
+  selinux:
+    policy: targeted
+    state: "{{ selinux_state }}"
+  become: true
+
+- name: Security | Enable SELinux booleans
+  seboolean:
+    name: "{{ item }}"
+    state: true
+    persistent: true
+  with_items: "{{ selinux_booleans }}"
+  when: selinux_state == 'enforcing' or selinux_state == 'permissive'
+  become: true
+
+- name: Security | Make sure the firewall is running
+  service:
+    name: firewalld
+    state: started
+    enabled: true
+  become: true
+
+- name: Security | Make sure user specified services can pass through firewall
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items: "{{ firewall_allow_services }}"
+  become: true
+  notify:
+    - restart firewalld
+
+- name: Security | Make sure user specified services cannot pass through firewall
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    state: disabled
+  with_items: "{{ firewall_disallow_services }}"
+  become: true
+  notify:
+    - restart firewalld
+
+- name: Security | Make sure user specified ports can pass through firewall
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  with_items: "{{ firewall_allow_ports }}"
+  become: true
+  notify:
+    - restart firewalld
+
+- name: "Security | SSH | PasswordAuthentication {{ ssh_PasswordAuthentication }}"
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    create: true
+    regexp: '^PasswordAuthentication'
+    insertafter: '#PasswordAuthentication'
+    line: "PasswordAuthentication {{ ssh_PasswordAuthentication }}"
+  become: true
+  notify: 
+    - restart sshd
+
+- name: "Security | SSH | PermitRootLogin {{ ssh_PermitRootLogin }}"
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    create: true
+    regexp: '^PermitRootLogin'
+    insertafter: '#PermitRootLogin'
+    line: "PermitRootLogin {{ ssh_PermitRootLogin }}"
+  become: true
+  notify: 
+    - restart sshd
+
+- name: "Security | SSH | PermitEmptyPasswords {{ ssh_PermitEmptyPasswords }}"
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    create: true
+    regexp: '^PermitEmptyPasswords'
+    insertafter: '#PermitEmptyPasswords'
+    line: "PermitEmptyPasswords {{ ssh_PermitEmptyPasswords }}"
+  become: true
+  notify: 
+    - restart sshd

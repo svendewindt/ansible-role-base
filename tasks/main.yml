@@ -1,0 +1,7 @@
+---
+# tasks file for base_role
+- include_tasks: users.yml
+- include_tasks: install.yml
+- include_tasks: config.yml
+- include_tasks: git.yml
+
