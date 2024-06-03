@@ -87,7 +87,7 @@ An example can be found in the /tests/test.yml.
     git_core_autocrlf: "input"
 
   roles:
-    - ansible_role_base
+    - svendewindt.base
 ```
 
 License
