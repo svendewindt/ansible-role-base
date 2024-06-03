@@ -12,7 +12,7 @@ add_users:
 #    ssh_key: 
 
 # Install
-install_corepackages: ["firewalld", "git", "vim"]
+install_corepackages: ["firewalld", "git", "vim", "fail2ban"]
 install_packages: []
 
 # Config
