@@ -21,15 +21,22 @@
   with_items: "{{ selinux_booleans }}"
   when: selinux_state == 'enforcing' or selinux_state == 'permissive'
   become: true
+  
+- name: Systemd | Ensure fail2ban is enabled and started
+  ansible.builtin.systemd_service:
+    name: fail2ban
+    enabled: true
+    state: started
+  become: true
 
-- name: Security | Make sure the firewall is running
+- name: Security | Ensure the firewall is running
   service:
     name: firewalld
     state: started
     enabled: true
   become: true
 
-- name: Security | Make sure user specified services can pass through firewall
+- name: Security | Ensure user specified services can pass through firewall
   firewalld:
     service: "{{ item }}"
     permanent: true
@@ -39,7 +46,7 @@
   notify:
     - restart firewalld
 
-- name: Security | Make sure user specified services cannot pass through firewall
+- name: Security | Ensure user specified services cannot pass through firewall
   firewalld:
     service: "{{ item }}"
     permanent: true
@@ -49,7 +56,7 @@
   notify:
     - restart firewalld
 
-- name: Security | Make sure user specified ports can pass through firewall
+- name: Security | Ensure user specified ports can pass through firewall
   firewalld:
     port: "{{ item }}"
     permanent: true
