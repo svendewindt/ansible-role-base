@@ -2,11 +2,11 @@
 - name: Install | Ensure core packages are installed
   package:
     name: "{{ install_corepackages }}"
-    state: installed
+    state: present
   become: true
 
 - name: Install | Ensure specified packages are installed
   package:
     name: "{{ install_packages }}"
-    state: installed
+    state: present
   become: true
